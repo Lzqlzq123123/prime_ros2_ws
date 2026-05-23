@@ -1,0 +1,72 @@
+primeu_tracker_retargeting:
+  ros__parameters:
+    tracking_world_frame: libsurvive_world
+    tracking_coordinate_convention: openxr
+    robot_base_frame: body_base_link
+
+    waist_tracker_frame: LHR-31C9C2E6
+    left_tracker_frame: LHR-6E8EC1F7
+    right_tracker_frame: LHR-4622FDDD
+
+    waist_target_frame: primeu_waist_target
+    left_target_frame: primeu_left_target
+    right_target_frame: primeu_right_target
+
+    publish_tf: true
+    publish_pose_topics: true
+    publish_relative_pose_topics: true
+    auto_calibrate: true
+    publish_rate_hz: 30.0
+    log_throttle_sec: 2.0
+
+    # Robot waist link pose in body_base_link when the system is calibrated.
+    # This comes from the URDF root -> waist_yaw_joint origin.
+    robot_waist_xyz: [ -2.29257e-05, -5.21767e-07, 1.08679 ]
+    robot_waist_rpy: [ 0.0, 0.0, 1.5708 ]
+
+    # Fixed correction from tracker frame to the wrist target frame.
+    # Keep identity first, then tune if the tracker mount is rotated or offset.
+    left_hand_correction_xyz: [ 0.0, 0.0, 0.0 ]
+    left_hand_correction_rpy: [ 0.0, 0.0, 0.0 ]
+    right_hand_correction_xyz: [ 0.0, 0.0, 0.0 ]
+    right_hand_correction_rpy: [ 0.0, 0.0, 0.0 ]
+    # Waist tracker is mounted 90 deg clockwise relative to the robot waist.
+    # Use negative yaw here because the correction is post-multiplied to the tracker pose.
+    waist_tracker_correction_xyz: [ 0.0, 0.0, 0.0 ]
+    waist_tracker_correction_rpy: [ 0.0, 0.0, -1.5708 ]
+    # Map tracker-relative hand motion into the robot waist_yaw_link axes.
+    # The robot waist frame is yawed 90 deg from body_base_link, so tracker
+    # inward motion must rotate to robot waist -X instead of waist -Y.
+    tracker_to_robot_relative_rpy: [ 0.0, 0.0, -1.5708 ]
+
+    # PrimeU arm IK. Targets are solved to the wrist yaw links, not the hand dummy links.
+    ik_joint_names:
+      - waist_yaw_joint
+      - left_shoulder_pitch_joint
+      - left_shoulder_roll_joint
+      - left_shoulder_yaw_joint
+      - left_elbow_pitch_joint
+      - left_wrist_roll_joint
+      - left_wrist_pitch_joint
+      - left_wrist_yaw_joint
+      - right_shoulder_pitch_joint
+      - right_shoulder_roll_joint
+      - right_shoulder_yaw_joint
+      - right_elbow_pitch_joint
+      - right_wrist_roll_joint
+      - right_wrist_pitch_joint
+      - right_wrist_yaw_joint
+    ik_left_tip_link: left_wrist_yaw_link
+    ik_right_tip_link: right_wrist_yaw_link
+    ik_position_weight: 20.0
+    ik_orientation_weight: 1.0
+    ik_waist_orientation_weight: 10.0
+    ik_regularization_weight: 0.02
+    ik_smooth_weight: 0.2
+    ik_max_iterations: 30
+    publish_joint_states: true
+    publish_joint_trajectory: false
+    joint_state_topic: /joint_states
+    joint_target_topic: arm_joint_targets
+    joint_trajectory_topic: arm_joint_trajectory
+    joint_trajectory_duration_sec: 0.05
